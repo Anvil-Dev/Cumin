@@ -1,0 +1,3 @@
+rootProject.name = 'Cumin'
+include 'processor'
+include 'test'

@@ -1,0 +1,29 @@
+plugins {
+    id 'java'
+}
+
+group = 'dev.anvilcraft.cumin'
+version = '1.0.0'
+
+repositories {
+    mavenCentral()
+    maven {
+        name = "Mojang"
+        url = uri("https://libraries.minecraft.net")
+    }
+}
+
+dependencies {
+    implementation 'com.google.code.findbugs:jsr305:3.0.2'
+    implementation project(':processor')
+    annotationProcessor project(':processor')
+    implementation 'com.mojang:datafixerupper:8.0.16'
+
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+test {
+    useJUnitPlatform()
+}
