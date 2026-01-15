@@ -12,5 +12,5 @@ import java.lang.annotation.Target;
 public @interface CodecField {
     String value() default "";
     String getter() default "";
-    UseCodec codec() default @UseCodec;
+    UseCodec codec() default @UseCodec(value = Void.class);
 }

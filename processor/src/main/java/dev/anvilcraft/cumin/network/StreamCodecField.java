@@ -11,5 +11,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.SOURCE)
 public @interface StreamCodecField {
     String getter() default "";
-    UseCodec codec() default @UseCodec;
+    UseCodec codec() default @UseCodec(value = Void.class);
 }
