@@ -1,8 +1,11 @@
-package dev.anvilcraft.cumin;
+package dev.anvilcraft.cumin.test;
+
+import dev.anvilcraft.cumin.AutoCodec;
+import dev.anvilcraft.cumin.CodecField;
+import dev.anvilcraft.cumin.CodecIgnore;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @AutoCodec
 public final class CodecTest1Class {
