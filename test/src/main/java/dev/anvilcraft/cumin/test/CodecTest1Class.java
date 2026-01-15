@@ -1,7 +1,7 @@
 package dev.anvilcraft.cumin.test;
 
-import dev.anvilcraft.cumin.AutoCodec;
-import dev.anvilcraft.cumin.CodecField;
+import dev.anvilcraft.cumin.codec.AutoCodec;
+import dev.anvilcraft.cumin.codec.CodecField;
 import dev.anvilcraft.cumin.CodecIgnore;
 
 import java.util.List;

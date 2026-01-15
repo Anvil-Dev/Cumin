@@ -9,8 +9,8 @@ import com.palantir.javapoet.JavaFile;
 import com.palantir.javapoet.ParameterizedTypeName;
 import com.palantir.javapoet.TypeName;
 import com.palantir.javapoet.TypeSpec;
-import dev.anvilcraft.cumin.AutoCodec;
-import dev.anvilcraft.cumin.CodecField;
+import dev.anvilcraft.cumin.codec.AutoCodec;
+import dev.anvilcraft.cumin.codec.CodecField;
 import dev.anvilcraft.cumin.CodecIgnore;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -33,7 +33,7 @@ import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
 
 @AutoService(Processor.class)
-@SupportedAnnotationTypes("dev.anvilcraft.cumin.AutoCodec")
+@SupportedAnnotationTypes("dev.anvilcraft.cumin.codec.AutoCodec")
 @SupportedSourceVersion(SourceVersion.RELEASE_21)
 public class AutoCodecProcessor extends AbstractProcessor {
     // 定义一些常用的类名，方便 JavaPoet 调用
@@ -89,9 +89,12 @@ public class AutoCodecProcessor extends AbstractProcessor {
             // 2. 处理容器类型 (List, Optional, Map - 复用之前的逻辑)
             // 确定 Codec 引用 (逻辑优先级：手动指定 > 自动识别)
             CodeBlock codecRef;
-            if (anno != null && !anno.codec().isEmpty()) {
+            if (anno != null && anno.codec().clazz() != Void.class) {
                 // 如果用户手动指定了 codec 表达式，直接作为 Literal 写入
-                codecRef = CodeBlock.of("$L", anno.codec());
+                Class<?> clazz = anno.codec().clazz();
+                String canonicalName = clazz.getCanonicalName();
+                String memberName = anno.codec().member().isEmpty() ? "CODEC" : anno.codec().member();
+                codecRef = CodeBlock.of("$L", canonicalName + "." + memberName);
             } else {
                 // 否则走之前的自动递归解析逻辑
                 codecRef = resolveCodec(typeMirror);
@@ -126,7 +129,7 @@ public class AutoCodecProcessor extends AbstractProcessor {
         TypeSpec.Builder builder = TypeSpec.classBuilder(generatedClassName)
             .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
             .addAnnotation(generatedAnnotation);
-        if(codecType == AutoCodec.CodecType.CODEC) {
+        if (codecType == AutoCodec.CodecType.CODEC) {
             CodeBlock codecInitBlock = CodeBlock.builder()
                 .add("$T.create(instance -> instance.group(\n", RECORD_CODEC_BUILDER)
                 .indent()
@@ -158,7 +161,7 @@ public class AutoCodecProcessor extends AbstractProcessor {
                 Modifier.FINAL
             ).initializer(mapCodecInitBlock).build();
             builder.addField(mapCodecInstanceField);
-            if(codecType == AutoCodec.CodecType.BOTH) {
+            if (codecType == AutoCodec.CodecType.BOTH) {
                 CodeBlock codecInitBlock = CodeBlock.builder()
                     .add("MAP_CODEC.codec()")
                     .build();
